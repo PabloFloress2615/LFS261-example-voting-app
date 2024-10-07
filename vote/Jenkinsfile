@@ -8,7 +8,7 @@ pipeline {
             }
             agent {
                 docker {
-                    image 'python:3.11'
+                    image 'python:3.11-slim'
                     args '--user root'
                 }
             }
@@ -16,7 +16,7 @@ pipeline {
                 echo 'Installing dependencies for vote app...'
                 dir('vote') {
                     sh "pip install -r requirements.txt"
-                    sh "pip list | grep nose" // Verificar que nose está instalado
+                    sh "pip list" // Verificar que las dependencias estén instaladas
                 }
             }
         }
@@ -27,17 +27,14 @@ pipeline {
             }
             agent {
                 docker {
-                    image 'python:3.11'
+                    image 'python:3.11-slim'
                     args '--user root'
                 }
             }
             steps {
                 echo 'Running unit tests on vote app...'
                 dir('vote') {
-                    // Puedes usar cualquiera de las dos opciones:
-                    sh "python -m nose -v"
-                    // O si sigue sin funcionar:
-                    // sh "pytest -v" // Cambia a pytest si nose sigue sin funcionar
+                    sh 'python -m nose -v'
                 }
             }
         }
