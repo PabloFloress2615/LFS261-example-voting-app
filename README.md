@@ -1,4 +1,4 @@
-Example Voting App TEST
+Example Voting App
 =========
 
 Getting started
