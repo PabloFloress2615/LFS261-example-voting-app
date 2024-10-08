@@ -34,7 +34,7 @@ pipeline {
             steps {
                 echo 'Running unit tests on vote app...'
                 dir('vote') {
-		    sh 'pip install nose2'
+		    sh 'pip install -r requirements.txt'
                     sh 'python -m nose2 -v'
                 }
             }
