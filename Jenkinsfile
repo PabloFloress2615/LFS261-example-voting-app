@@ -41,11 +41,11 @@ pipeline {
         }
 
         stage('Package Vote with Docker') {
-            agent any
             when {
                 changeset "**/vote/**"
                 branch 'master'
             }
+            agent any
             steps {
                 echo 'Packaging vote app with Docker...'
                 script {
@@ -94,11 +94,11 @@ pipeline {
         }
 
         stage('Package Result with Docker') {
-            agent any
             when {
                 changeset "**/result/**"
                 branch 'master'
             }
+            agent any
             steps {
                 echo 'Packaging result app with Docker...'
                 script {
@@ -186,39 +186,36 @@ pipeline {
                 }
             }
         }
-    stage('Sonarqube') {
-      agent any
-      when{
-        branch 'master'
-      }
-     
-      environment{
-        sonarpath = tool 'sonar-instavote'
-      }
 
-      steps {
-            echo 'Running Sonarqube Analysis..'
-            withSonarQubeEnv('sonar-instavote') {
-              sh "${sonarpath}/bin/sonar-scanner -Dproject.settings=sonar-project.properties -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400"
-            }
-      }
-    }
-
-
-    stage("Quality Gate") {
-        steps {
-            timeout(time: 1, unit: 'HOURS') {
-                // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
-                // true = set pipeline to UNSTABLE, false = don't
-                waitForQualityGate abortPipeline: true
-            }
-        }
-    }
-        stage('Deploy to Dev') {
+        stage('Sonarqube') {
             agent any
             when {
                 branch 'master'
             }
+            environment {
+                sonarpath = tool 'sonar-instavote'
+            }
+            steps {
+                echo 'Running Sonarqube Analysis...'
+                withSonarQubeEnv('sonar-instavote') {
+                    sh "${sonarpath}/bin/sonar-scanner -Dproject.settings=sonar-project.properties -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400"
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Deploy to Dev') {
+            when {
+                branch 'master'
+            }
+            agent any
             steps {
                 echo 'Deploying Instavote stack to development...'
                 sh 'docker compose up -d'
