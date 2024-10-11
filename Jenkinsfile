@@ -39,6 +39,22 @@ pipeline {
                 }
             }
         }
+	stage('Vote Integration Test') {
+	    agent any
+	    when {
+	        // Ejecuta este stage solo si hay cambios en la carpeta 'vote' y estamos en la rama 'master'
+	        changeset "**/vote/**"
+	        branch 'master'
+	    }
+	    steps {
+	        echo 'Running Integration Tests on vote app'
+	        dir('vote') {
+	            // Ejecuta el script de integración llamado 'integration_test.sh'
+	            sh 'sh integration_test.sh'
+	        }
+	    }
+	}
+
 
         stage('Package Vote with Docker') {
             when {
