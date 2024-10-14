@@ -243,8 +243,11 @@ pipeline {
 	        script {
 	            def commit = env.GIT_COMMIT // Asignar el valor de GIT_COMMIT a una variable local
 	            echo "Current GIT_COMMIT: ${commit}"
-	            echo "triggering deployment"
-	            // Aquí iría el código para pasar las variables al job de deployment
+	            echo "Triggering deployment"
+	            
+	            // Aquí se llama a otro job de Jenkins para hacer el despliegue
+	            build job: 'deployment', 
+	                  parameters: [string(name: 'COMMIT', value: commit)]
 	        }
 	    }
 	}
