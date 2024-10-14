@@ -238,17 +238,17 @@ pipeline {
             }
         }
 	stage('Trigger deployment') {
-	      agent any
-	      environment{
-	        def GIT_COMMIT = "${env.GIT_COMMIT}"
-	      }
-	      steps{
-	        echo "${GIT_COMMIT}"
-	        echo "triggering deployment"
-	        // passing variables to job deployment run by vote-deploy repository Jenkinsfile
-	        build job: 'deployment', parameters: [string(name: 'DOCKERTAG', value: GIT_COMMIT)]
-	      }    
-	   }
+	    agent any
+	    steps {
+	        script {
+	            def commit = env.GIT_COMMIT // Asignar el valor de GIT_COMMIT a una variable local
+	            echo "Current GIT_COMMIT: ${commit}"
+	            echo "triggering deployment"
+	            // Aquí iría el código para pasar las variables al job de deployment
+	        }
+	    }
+	}
+
     }
 
     post {
